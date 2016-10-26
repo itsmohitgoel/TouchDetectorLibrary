@@ -29,12 +29,12 @@ task deleteOldJar(type: Delete){
     delete 'libs/touchlib.jar'
 }
 
-////task to export content as jar
-//task createJar(type: Copy){
-//    from('build/intermediates/bundles/release/')
-//    into('libs/')
-//    include('classes.jar')
-//    rename('classes.jar', 'touchlib.jar')
-//}
-//
-//createJar.dependsOn(deleteOldJar, build)
+//task to export content as jar
+task createJar(type: Copy){
+    from('build/intermediates/bundles/release/')
+    into('libs/')
+    include('classes.jar')
+    rename('classes.jar', 'touchlib.jar')
+}
+
+createJar.dependsOn(deleteOldJar, build)

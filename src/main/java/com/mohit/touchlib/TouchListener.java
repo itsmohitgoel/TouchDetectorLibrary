@@ -10,6 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by Mohit on 25-10-2016.
  */
@@ -17,21 +19,26 @@ import org.json.JSONObject;
 public class TouchListener implements View.OnTouchListener {
     public static final String LOG_TAG = TouchListener.class.getSimpleName();
     private GestureDetector mGestureDetector;
-    private Activity activity = null;
+    WeakReference<Activity> mParentActivity;
     JSONArray touchDataArray = new JSONArray();
     private long startTime;
 
-    public TouchListener(GestureDetector gestureDetector, Activity activity) {
+    public TouchListener(GestureDetector gestureDetector, WeakReference<Activity> parent) {
         mGestureDetector = gestureDetector;
-        this.activity = activity;
+        this.mParentActivity = parent;
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        Activity activity = mParentActivity.get();
+        if (activity == null) {
+            return true; //Activity has been garbage collected, so return and also don't relay event
+        }
+
         try {
             JSONObject jsonEvent = new JSONObject();
-            jsonEvent.put(activity.getString(R.string.x_key), event.getX());
-            jsonEvent.put(activity.getString(R.string.y_key), event.getY());
+            jsonEvent.put("X", event.getX());
+            jsonEvent.put("Y", event.getY());
 
             touchDataArray.put(jsonEvent);
         } catch (JSONException e) {
@@ -47,12 +54,12 @@ public class TouchListener implements View.OnTouchListener {
             case MotionEvent.ACTION_UP:
                 JSONObject touchJson = new JSONObject();
                 try {
-                    touchJson.put(activity.getString(R.string.activity_name), activity.getClass().getSimpleName());
-                    touchJson.put(activity.getString(R.string.uuid), Utility.getDeviceId(activity));
-                    touchJson.put(activity.getString(R.string.gesture_type_key), activity.getString(R.string.gesture_type_touch_value));
-                    touchJson.put(activity.getString(R.string.start_time_key), Utility.getFormattedTime(startTime));
-                    touchJson.put(activity.getString(R.string.end_time_key), Utility.getFormattedTime(System.currentTimeMillis()));
-                    touchJson.put(activity.getString(R.string.touch_data_key), touchDataArray);
+                    touchJson.put("activity_name", activity.getClass().getSimpleName());
+                    touchJson.put("UUID", Utility.getDeviceId(activity));
+                    touchJson.put("gesture_type", "touch");
+                    touchJson.put("start_time", Utility.getFormattedTime(startTime));
+                    touchJson.put("end_time", Utility.getFormattedTime(System.currentTimeMillis()));
+                    touchJson.put("touch_data", touchDataArray);
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "Error occurred while building json object for touch data.");
                     e.printStackTrace();

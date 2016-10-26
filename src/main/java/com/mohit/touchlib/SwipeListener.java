@@ -9,22 +9,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by Mohit on 25-10-2016.
  */
 class SwipeListener implements GestureDetector.OnGestureListener {
-    private Activity activity = null;
+    WeakReference<Activity> mParentActivity;
     private long startTime;
 
-    public SwipeListener(Activity activity) {
-        this.activity = activity;
+    public SwipeListener(WeakReference<Activity> parent) {
+        this.mParentActivity = parent;
     }
 
     public static final String LOG_TAG = SwipeListener.class.getSimpleName();
 
     @Override
     public boolean onDown(MotionEvent e) {
-        startTime =  System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
         return true;
     }
 
@@ -52,25 +54,30 @@ class SwipeListener implements GestureDetector.OnGestureListener {
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        Activity activity = mParentActivity.get();
+        if (activity == null) {
+            return true; //Activity has been garbage collected, so return
+        }
+
         JSONObject swipeJson = new JSONObject();
         try {
-            swipeJson.put(activity.getString(R.string.activity_name), activity.getClass().getSimpleName());
-            swipeJson.put(activity.getString(R.string.uuid), Utility.getDeviceId(activity));
-            swipeJson.put(activity.getString(R.string.gesture_type_key), activity.getString(R.string.gesture_type_swipe_value));
-            swipeJson.put(activity.getString(R.string.start_time_key), Utility.getFormattedTime(startTime));
-            swipeJson.put(activity.getString(R.string.end_time_key), Utility.getFormattedTime(System.currentTimeMillis()));
+            swipeJson.put("activity_name", activity.getClass().getSimpleName());
+            swipeJson.put("UUID", Utility.getDeviceId(activity));
+            swipeJson.put("gesture_type", "swipe");
+            swipeJson.put("start_time", Utility.getFormattedTime(startTime));
+            swipeJson.put("end_time", Utility.getFormattedTime(System.currentTimeMillis()));
 
             JSONArray swipeDataArray = new JSONArray();
             JSONObject jsonEvent1 = new JSONObject();
-            jsonEvent1.put(activity.getString(R.string.x_key), e1.getX());
-            jsonEvent1.put(activity.getString(R.string.y_key), e1.getY());
+            jsonEvent1.put("X", e1.getX());
+            jsonEvent1.put("Y", e1.getY());
 
             JSONObject jsonEvent2 = new JSONObject();
-            jsonEvent2.put(activity.getString(R.string.x_key), e2.getX());
-            jsonEvent2.put(activity.getString(R.string.y_key), e2.getY());
+            jsonEvent2.put("X", e2.getX());
+            jsonEvent2.put("Y", e2.getY());
             swipeDataArray.put(jsonEvent1).put(jsonEvent2);
-            addDirections(e1, e2, swipeJson);
-            swipeJson.put(activity.getString(R.string.swipe_data_key), swipeDataArray);
+            addDirections(e1, e2, swipeJson, activity);
+            swipeJson.put("swipe_data", swipeDataArray);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error occurred while building json object for swipe data.");
             e.printStackTrace();
@@ -78,23 +85,25 @@ class SwipeListener implements GestureDetector.OnGestureListener {
 
         Log.d(LOG_TAG, swipeJson.toString());
         swipeJson = null;
+
+
         return true;
     }
 
-    private void addDirections(MotionEvent e1, MotionEvent e2, JSONObject swipeJson) throws JSONException {
+    private void addDirections(MotionEvent e1, MotionEvent e2, JSONObject swipeJson, Activity activity) throws JSONException {
         //Left To Right swipe
         if ((e1.getX() < e2.getX()) && (e2.getX() - e1.getX()) > 100) {
             if (swipeJson != null) {
-                    swipeJson.accumulate(activity.getString(R.string.swipe_direction_key),
-                            activity.getString(R.string.swipe_direction_l_to_r_value));
+                swipeJson.accumulate("direction",
+                        "Left To Right");
             }
         }
 
         //Right to left swipe
         if ((e1.getX() > e2.getX()) && (e1.getX() - e2.getX()) > 100) {
             if (swipeJson != null) {
-                    swipeJson.accumulate(activity.getString(R.string.swipe_direction_key),
-                            activity.getString(R.string.swipe_direction_r_to_l_value));
+                swipeJson.accumulate("direction",
+                        "Right To Left");
             }
 
         }
@@ -102,16 +111,16 @@ class SwipeListener implements GestureDetector.OnGestureListener {
         // Top to bottom swipe
         if ((e1.getY() < e2.getY()) && (e2.getY() - e1.getY()) > 100) {
             if (swipeJson != null) {
-                    swipeJson.accumulate(activity.getString(R.string.swipe_direction_key),
-                            activity.getString(R.string.swipe_direction_t_to_b_value));
+                swipeJson.accumulate("direction",
+                        "Top To Bottom");
             }
         }
 
         // Bottom to top swipe
         if ((e1.getY() > e2.getY()) && (e1.getY() - e2.getY()) > 100) {
             if (swipeJson != null) {
-                    swipeJson.accumulate(activity.getString(R.string.swipe_direction_key),
-                            activity.getString(R.string.swipe_direction_b_to_t_value));
+                swipeJson.accumulate("direction",
+                        "Bottom To Top");
             }
         }
     }

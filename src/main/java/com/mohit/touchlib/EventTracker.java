@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.view.GestureDetector;
 import android.view.View;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
@@ -32,10 +33,10 @@ public class EventTracker {
     public boolean register(Activity activity) {
         View v = activity.getWindow().getDecorView();
 
-        SwipeListener swipeListener = new SwipeListener(activity);
+        SwipeListener swipeListener = new SwipeListener(new WeakReference<Activity>(activity));
         GestureDetector gestureDetector = new GestureDetector(activity, swipeListener);
 
-        TouchListener touchListener = new TouchListener(gestureDetector, activity);
+        TouchListener touchListener = new TouchListener(gestureDetector, new WeakReference<Activity>(activity));
         v.setOnTouchListener(touchListener);
         return activityList.add(activity);
     }
