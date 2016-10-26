@@ -54,10 +54,10 @@ class SwipeListener implements GestureDetector.OnGestureListener {
         JSONObject swipeJson = new JSONObject();
         try {
             swipeJson.put(activity.getString(R.string.activity_name), activity.getClass().getSimpleName());
-            swipeJson.put(activity.getString(R.string.start_time_key), "");
-            swipeJson.put(activity.getString(R.string.end_time_key), "");
             swipeJson.put(activity.getString(R.string.uuid), Utility.getDeviceId(activity));
             swipeJson.put(activity.getString(R.string.gesture_type_key), activity.getString(R.string.gesture_type_swipe_value));
+            swipeJson.put(activity.getString(R.string.start_time_key), "");
+            swipeJson.put(activity.getString(R.string.end_time_key), "");
 
             JSONArray swipeDataArray = new JSONArray();
             JSONObject jsonEvent1 = new JSONObject();

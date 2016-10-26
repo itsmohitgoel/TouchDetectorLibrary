@@ -16,17 +16,15 @@ import org.json.JSONObject;
 
 public class TouchListener implements View.OnTouchListener {
     public static final String LOG_TAG = TouchListener.class.getSimpleName();
-    private String activityName = "";
-    private String UUID = "";
     private GestureDetector mGestureDetector;
     private Activity activity = null;
     JSONArray touchDataArray = new JSONArray();
+    private long startTime;
 
     public TouchListener(GestureDetector gestureDetector, Activity activity) {
         mGestureDetector = gestureDetector;
         this.activity = activity;
     }
-
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -39,49 +37,32 @@ public class TouchListener implements View.OnTouchListener {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String actionString = "";
 
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                actionString = "DOWN";
+                startTime = System.currentTimeMillis();
                 break;
             case MotionEvent.ACTION_UP:
-                actionString = "UP";
+                JSONObject touchJson = new JSONObject();
+                try {
+                    touchJson.put(activity.getString(R.string.activity_name), activity.getClass().getSimpleName());
+                    touchJson.put(activity.getString(R.string.uuid), Utility.getDeviceId(activity));
+                    touchJson.put(activity.getString(R.string.gesture_type_key), activity.getString(R.string.gesture_type_touch_value));
+                    touchJson.put(activity.getString(R.string.start_time_key), startTime);
+                    touchJson.put(activity.getString(R.string.end_time_key), System.currentTimeMillis());
+                    touchJson.put(activity.getString(R.string.touch_data_key), touchDataArray);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
+                Log.d(LOG_TAG, touchJson.toString());
+                touchDataArray = new JSONArray();
                 break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                actionString = "PNTR DOWN";
-                break;
-            case MotionEvent.ACTION_POINTER_UP:
-                actionString = "PNTR UP";
-                break;
-            case MotionEvent.ACTION_MOVE:
-                actionString = "MOVE";
-                break;
-            default:
-                actionString = "";
         }
-
 
         mGestureDetector.onTouchEvent(event);
-        int action = event.getAction();
-        Log.i(LOG_TAG, "Touch at: X= " + event.getX() + ",  Y = " + event.getY() + ", in: " + activityName
-                + ", time:  " + System.currentTimeMillis() + ", actiontype : " + actionString);
-
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            Log.d(LOG_TAG, touchDataArray.toString());
-            touchDataArray = new JSONArray();
-        }
         return false; //this listener has not consumed the event, so that it can be relayed  to GestureDetector
-    }
-
-    public void setActivityName(String activityName) {
-        this.activityName = activityName;
-    }
-
-    public void setUUID(String UUID) {
-        this.UUID = UUID;
     }
 }
 
