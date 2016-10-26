@@ -11,7 +11,8 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
-/**
+/** Handler class for monitoring swipe gesture to the respective
+ * views or activities
  * Created by Mohit on 25-10-2016.
  */
 class SwipeListener implements GestureDetector.OnGestureListener {
@@ -90,6 +91,9 @@ class SwipeListener implements GestureDetector.OnGestureListener {
         return true;
     }
 
+    /**
+     * Helper method to add directions of the swipe movement, to the json object
+     */
     private void addDirections(MotionEvent e1, MotionEvent e2, JSONObject swipeJson, Activity activity) throws JSONException {
         //Left To Right swipe
         if ((e1.getX() < e2.getX()) && (e2.getX() - e1.getX()) > 100) {

@@ -8,6 +8,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
+ * Singleton class to provide register activities for
+ * touch events monitoring
  * Created by Mohit on 25-10-2016.
  */
 public class EventTracker {
@@ -30,7 +32,7 @@ public class EventTracker {
         return instance;
     }
 
-    public boolean register(Activity activity) {
+    public TouchListener register(Activity activity) {
         View v = activity.getWindow().getDecorView();
 
         SwipeListener swipeListener = new SwipeListener(new WeakReference<Activity>(activity));
@@ -38,7 +40,7 @@ public class EventTracker {
 
         TouchListener touchListener = new TouchListener(gestureDetector, new WeakReference<Activity>(activity));
         v.setOnTouchListener(touchListener);
-        return activityList.add(activity);
+        return touchListener;
     }
 
     public boolean unregister(Activity activity) {
