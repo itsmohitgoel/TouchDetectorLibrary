@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">touchlib</string>
+    <string name="activity_name">activity_name</string>
+    <string name="touch_data_key">touch_data</string>
+    <string name="swipe_data_key">swipe_data</string>
+    <string name="x_key">X</string>
+    <string name="y_key">Y</string>
+    <string name="uuid">UUID</string>
+    <string name="gesture_type_touch_value">touch</string>
+    <string name="start_time_key">start_time</string>
+    <string name="end_time_key">end_time</string>
+
+    <!-- Swipe gesture keys and values-->
+    <string name="gesture_type_key">gesture_type</string>
+    <string name="gesture_type_swipe_value">swipe</string>
+    <string name="swipe_direction_key">direction</string>
+    <string name="swipe_direction_l_to_r_value">Left To Right</string>
+    <string name="swipe_direction_r_to_l_value">Right To Left</string>
+    <string name="swipe_direction_t_to_b_value">Top To Bottom</string>
+    <string name="swipe_direction_b_to_t_value">Bottom To Top</string>
+</resources>
