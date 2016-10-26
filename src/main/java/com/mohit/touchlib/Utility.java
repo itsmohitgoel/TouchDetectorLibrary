@@ -15,4 +15,9 @@ public class Utility {
             return android.os.Build.SERIAL;
         }
     }
+
+    public static String getFormattedTime(long timeInMillis) {
+        String date = new java.text.SimpleDateFormat("hh:mm:ss a").format(new java.util.Date(timeInMillis));
+        return date;
+    }
 }

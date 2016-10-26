@@ -36,8 +36,6 @@ public class EventTracker {
         GestureDetector gestureDetector = new GestureDetector(activity, swipeListener);
 
         TouchListener touchListener = new TouchListener(gestureDetector, activity);
-//        gestureDetector.setOnDoubleTapListener(swipeListener);
-//        gestureDetector.seton(swipeListener);
         v.setOnTouchListener(touchListener);
         return activityList.add(activity);
     }

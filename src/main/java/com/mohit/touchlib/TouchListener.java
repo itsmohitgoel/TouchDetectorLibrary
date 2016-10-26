@@ -35,6 +35,7 @@ public class TouchListener implements View.OnTouchListener {
 
             touchDataArray.put(jsonEvent);
         } catch (JSONException e) {
+            Log.e(LOG_TAG, "Error occurred while adding touch coordinates to touch data json");
             e.printStackTrace();
         }
 
@@ -49,10 +50,11 @@ public class TouchListener implements View.OnTouchListener {
                     touchJson.put(activity.getString(R.string.activity_name), activity.getClass().getSimpleName());
                     touchJson.put(activity.getString(R.string.uuid), Utility.getDeviceId(activity));
                     touchJson.put(activity.getString(R.string.gesture_type_key), activity.getString(R.string.gesture_type_touch_value));
-                    touchJson.put(activity.getString(R.string.start_time_key), startTime);
-                    touchJson.put(activity.getString(R.string.end_time_key), System.currentTimeMillis());
+                    touchJson.put(activity.getString(R.string.start_time_key), Utility.getFormattedTime(startTime));
+                    touchJson.put(activity.getString(R.string.end_time_key), Utility.getFormattedTime(System.currentTimeMillis()));
                     touchJson.put(activity.getString(R.string.touch_data_key), touchDataArray);
                 } catch (JSONException e) {
+                    Log.e(LOG_TAG, "Error occurred while building json object for touch data.");
                     e.printStackTrace();
                 }
 
